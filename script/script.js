@@ -171,33 +171,43 @@ document.getElementById("next-song").onclick = () => {
     mostrarCancion();
 };
 
-mostrarCancion();
+// Cambio automático de canciones cada 5 segundos
+setInterval(() => {
+    indexActual = (indexActual + 1) % canciones.length;
+    mostrarCancion();
+}, 5000);
 
+mostrarCancion();
 
 // Contador de tiempo juntos
 function actualizarContador() {
-    const fechaInicio = new Date('2022-11-19T00:00:00');
+    const fechaInicio = new Date(2022, 10, 13); // Mes 10 porque en JS los meses van de 0 a 11
     const fechaActual = new Date();
 
-    let diffTiempo = fechaActual - fechaInicio;
+    // Obtener diferencia en años, meses y días correctamente
+    let años = fechaActual.getFullYear() - fechaInicio.getFullYear();
+    let meses = fechaActual.getMonth() - fechaInicio.getMonth();
+    let dias = fechaActual.getDate() - fechaInicio.getDate();
 
-    let años = Math.floor(diffTiempo / (1000 * 60 * 60 * 24 * 365));
-    diffTiempo -= años * (1000 * 60 * 60 * 24 * 365);
+    // Ajustar si los días son negativos (es decir, el día actual es menor que el día de inicio)
+    if (dias < 0) {
+        meses--; // Restar un mes
+        let ultimoMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), 0);
+        dias += ultimoMes.getDate(); // Ajustar sumando los días del mes anterior
+    }
 
-    let meses = Math.floor(diffTiempo / (1000 * 60 * 60 * 24 * 30));
-    diffTiempo -= meses * (1000 * 60 * 60 * 24 * 30);
+    // Ajustar si los meses son negativos (es decir, aún no se ha cumplido un mes en este año)
+    if (meses < 0) {
+        años--;
+        meses += 12;
+    }
 
-    let dias = Math.floor(diffTiempo / (1000 * 60 * 60 * 24));
-    diffTiempo -= dias * (1000 * 60 * 60 * 24);
+    // Obtener horas, minutos y segundos restantes
+    let horas = fechaActual.getHours();
+    let minutos = fechaActual.getMinutes();
+    let segundos = fechaActual.getSeconds();
 
-    let horas = Math.floor(diffTiempo / (1000 * 60 * 60));
-    diffTiempo -= horas * (1000 * 60 * 60);
-
-    let minutos = Math.floor(diffTiempo / (1000 * 60));
-    diffTiempo -= minutos * (1000 * 60);
-
-    let segundos = Math.floor(diffTiempo / 1000);
-
+    // Actualizar el HTML
     document.getElementById("años").textContent = años;
     document.getElementById("meses").textContent = meses;
     document.getElementById("dias").textContent = dias;
@@ -206,11 +216,7 @@ function actualizarContador() {
     document.getElementById("segundos").textContent = segundos;
 }
 
-setInterval(actualizarContador, 1000);
-actualizarContador();
-
-
-// Actualizar contador cada segundo
+// Actualizar cada segundo
 setInterval(actualizarContador, 1000);
 actualizarContador();
 
